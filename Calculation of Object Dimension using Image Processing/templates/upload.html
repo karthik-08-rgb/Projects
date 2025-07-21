@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Upload Image</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .image-container, .measurements-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 10px;
+    }
+    .measurement-widget {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 10px;
+      text-align: center;
+      width: 300px;
+    }
+    img {
+      max-width: 300px;
+      margin-top: 10px;
+    }
+    /* Loading animation */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .loading-icon {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-icon"></div>
+</div>
+
+<div class="container mt-3">
+  <div class="col-md-6 offset-md-3">
+    <div class="d-flex align-items-center mb-3">
+      <img src="{{ url_for('static', filename='Animation - 1719469902298.gif') }}" alt="Animation" width="50" height="50" class="mr-2">
+      <h1 class="text-center mb-0">Upload new Image</h1>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+      <div class="custom-file mb-3">
+        <input type="file" class="custom-file-input" id="fileInput" name="file">
+        <label class="custom-file-label" for="fileInput">Choose file</label>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Upload</button>
+    </form>
+  </div>
+</div>
+
+{% if filename and bounding_boxes_output_filename and curves_output_filename %}
+<div class="container mt-4">
+  <div class="image-container">
+    <h2>Original Image</h2>
+    <img src="{{ url_for('static', filename='uploads/' ~ filename) }}" alt="Original Image">
+  </div>
+  <div class="image-container">
+    <h2>Processed Image (Bounding Boxes)</h2>
+    <img src="{{ url_for('static', filename='uploads/' ~ bounding_boxes_output_filename) }}" alt="Bounding Boxes Output Image">
+  </div>
+  <div class="image-container">
+    <h2>Processed Image (Curves)</h2>
+    <img src="{{ url_for('static', filename='uploads/' ~ curves_output_filename) }}" alt="Curves Output Image">
+  </div>
+</div>
+<div class="container mt-4">
+  <div class="measurements-container">
+    <div class="measurement-widget">
+      <h3>Bounding Boxes</h3>
+      <p>Total Objects: {{ num_boxes }}</p>
+      <ul>
+        {% for measurement in measurements %}
+        <li>Width: {{ measurement.width }} units, Height: {{ measurement.height }} units</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="measurements-container">
+    <div class="measurement-widget">
+      <h3>Curves</h3>
+      <p>Total Curves: {{ num_curves }}</p>
+      <ul>
+        {% for curve in curve_measurements %}
+        <li>Perimeter: {{ curve }} units</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Bootstrap JS and jQuery -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
+  // Show loading overlay on form submit
+  $('form').submit(function () {
+    $('#loadingOverlay').fadeIn();
+  });
+</script>
+
+</body>
+</html>
